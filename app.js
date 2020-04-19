@@ -24,10 +24,7 @@ mongoose.connect("mongodb://localhost:27017/sistema", {useUnifiedTopology: true,
     }
 });
 
-
-app.use(bodyParser.urlencoded({
-    extended: true
-  }));
+app.use(bodyparser.urlencoded((extended = true)));
 app.use(bodyparser.json());
 
 app.use((req,res,next)=>{
@@ -39,6 +36,7 @@ app.use((req,res,next)=>{
     next();
 });
 
+app.get('/', (req, res) => res.send('Hello World'))
 app.use('/api', user_routes);
 app.use('/api', categoria_routes);
 app.use('/api', producto_routes);
