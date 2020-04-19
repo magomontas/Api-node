@@ -12,7 +12,7 @@ var cliente_routes = require('./routes/cliente');
 var venta_route = require('./routes/venta');
 
 
-mongoose.connect("mongodb://localhost:27017/sistema", {useUnifiedTopology: true, useNewUrlParser: true}, (err, res)=>{
+mongoose.connect("mongodb://68.183.30.199cd:27017/sistema", {useUnifiedTopology: true, useNewUrlParser: true}, (err, res)=>{
     if(err){
         throw err;
     }else{
