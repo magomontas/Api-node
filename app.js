@@ -24,7 +24,10 @@ mongoose.connect("mongodb://localhost:27017/sistema", {useUnifiedTopology: true,
     }
 });
 
-app.use(bodyparser.urlencoded((extended = true)));
+
+app.use(bodyParser.urlencoded({
+    extended: true
+  }));
 app.use(bodyparser.json());
 
 app.use((req,res,next)=>{
