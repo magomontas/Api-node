@@ -19,23 +19,23 @@ function registrar(req, res) {
                 detalleventa.idventa = venta_save._id;
                 detalleventa.save((err, detalle_save) => {
                     if (detalle_save) {
-                        Producto.findById({ _id: element.idproducto }, (err, producto_data) => {
+                        Producto.findById({_id: element.idproducto}, (err, producto_data) => {
                             if (producto_data) {
-                                Producto.findByIdAndUpdate({ _id: producto_data._id }, { stock: parseInt(producto_data.stock) - parseInt(element.cantidad) }, (err, producto_edit) => {
+                                Producto.findByIdAndUpdate({_id: producto_data._id}, {stock: parseInt(producto_data.stock) - parseInt(element.cantidad)}, (err, producto_edit) => {
                                     res.end();
                                 });
                             } else {
-                                res.status(404).send({ mensaje: "No se encontro el producto" });
+                                res.status(404).send({mensaje: "No se encontro el producto"});
                             }
                         });
                     } else {
-                        res.status(401).send({ mensaje: "No se ha podido realizar la venta" });
+                        res.status(401).send({mensaje: "No se ha podido realizar la venta"});
                     }
                 });
             });
 
         } else {
-            res.status(401).send({ mensaje: "Error al registrar" });
+            res.status(401).send({mensaje: "Error al registrar"});
         }
     });
 }
@@ -45,7 +45,7 @@ function datos_venta(req, res) {
 
     Venta.findById({_id: id}, (err, data_venta) => {
         if (data_venta) {
-            DetalleVenta.find({ idventa: id }, (err, data_detalle) => {
+            DetalleVenta.find({idventa: id}, (err, data_detalle) => {
                 res.status(200).send(
                     {
                         venta: data_venta,
@@ -54,12 +54,37 @@ function datos_venta(req, res) {
                 )
             });
         } else {
-            res.status(404).send({ mensaje: "No se encontro ninguna venta" });
+            res.status(404).send({mensaje: "No se encontro ninguna venta"});
         }
     });
 }
 
+function listado_venta(req, res) {
+    Venta.find().populate('idcliente').populate('iduser').exec(
+        (err, data_venta) => {
+            if (data_venta) {
+                res.status(200).send({ventas: data_venta})
+            } else {
+                res.status(404).send({mensaje: "Error en la busqueda"})
+            }
+        })
+}
+
+function detalle_venta(req, res) {
+    var id = req.params['id'];
+
+    DetalleVenta.find({idventa: id}).populate('idproducto').exec((err, data_detalle) => {
+        if (data_detalle){
+            res.status(200).send({detalles: data_detalle})
+        }else {
+            res.status(404).send({mensaje: "Error en la busqueda"})
+        }
+    })
+}
+
 module.exports = {
     registrar,
-    datos_venta
+    datos_venta,
+    listado_venta,
+    detalle_venta,
 }

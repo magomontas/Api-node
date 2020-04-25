@@ -1,48 +1,49 @@
 var Producto = require('../models/producto');
+var Categoria = require('../models/categoria');
 var fs = require('fs');
 var path = require('path');
 
 function registrar(req, res) {
-   var data = req.body;
+    var data = req.body;
 
-   // if(req.files) {
-       // var imagen_path = req.files.imagen.path;
-       // var name = imagen_path.split('\\');
-       // var imagen_name = name[2];
+    // if(req.files) {
+    // var imagen_path = req.files.imagen.path;
+    // var name = imagen_path.split('\\');
+    // var imagen_name = name[2];
 
-       var producto = new Producto();
-       producto.titulo = data.titulo;
-       producto.descripcion = data.descripcion;
-       producto.imagen = data.imagen;
-       producto.precio_compra = data.precio_compra;
-       producto.precio_venta = data.precio_venta;
-       producto.stock = data.stock;
-       producto.id_categoria = data.id_categoria;
-       producto.puntos = data.puntos;
+    var producto = new Producto();
+    producto.titulo = data.titulo;
+    producto.descripcion = data.descripcion;
+    producto.imagen = data.imagen;
+    producto.precio_compra = data.precio_compra;
+    producto.precio_venta = data.precio_venta;
+    producto.stock = data.stock;
+    producto.id_categoria = data.id_categoria;
+    producto.puntos = data.puntos;
 
-       producto.save((err, producto_save) => {
-        if(err) {
+    producto.save((err, producto_save) => {
+        if (err) {
             res.status(500).send({mensaje: "Error de server"});
         } else {
-            if(producto_save) {
+            if (producto_save) {
                 res.status(200).send({producto: producto_save});
             } else {
                 res.status(403).send({mensaje: "Error al ingresar el producto"});
             }
         }
-       });
-   // }
-    
+    });
+    // }
+
 
 }
 
 function listar(req, res) {
     var titulo = req.params['titulo'];
-    Producto.find({titulo: new RegExp(titulo, 'i')}).populate('id_categoria').exec( (err, productos_listado) => {
-        if(err) {
+    Producto.find({titulo: new RegExp(titulo, 'i')}).populate('id_categoria').exec((err, productos_listado) => {
+        if (err) {
             res.status(500).send({mensaje: "Error en el server"});
         } else {
-            if(productos_listado) {
+            if (productos_listado) {
                 res.status(200).send({producto: productos_listado});
             } else {
                 res.status(404).send({mensaje: "NO se ha podido obtener el Producto"});
@@ -57,26 +58,34 @@ function editar(req, res) {
     // var img =req.params['img'];
 
     // if(req.files.imagen) {
-        // fs.unlink('./uploads/productos/' + img, (err) => {
-        //     if(err) throw err;
-        // });
+    // fs.unlink('./uploads/productos/' + img, (err) => {
+    //     if(err) throw err;
+    // });
 
-        // var imagen_path = req.files.imagen.path;
-        // var name = imagen_path.split('\\');
-        // var imagen_name = name[2];
+    // var imagen_path = req.files.imagen.path;
+    // var name = imagen_path.split('\\');
+    // var imagen_name = name[2];
 
 
-        Producto.findByIdAndUpdate({_id: id},{titulo: data.titulo, descripcion: data.descripcion, imagen: data.imagen, precio_compra: data.precio_compra, precio_venta: data.precio_venta, id_categoria: data.id_categoria, puntos: data.puntos}, (err, producto_edit) => {
-            if(err) {
-                res.status(500).send({mensaje: "Error de server"});
+    Producto.findByIdAndUpdate({_id: id}, {
+        titulo: data.titulo,
+        descripcion: data.descripcion,
+        imagen: data.imagen,
+        precio_compra: data.precio_compra,
+        precio_venta: data.precio_venta,
+        id_categoria: data.id_categoria,
+        puntos: data.puntos
+    }, (err, producto_edit) => {
+        if (err) {
+            res.status(500).send({mensaje: "Error de server"});
+        } else {
+            if (producto_edit) {
+                res.status(200).send({producto: producto_edit});
             } else {
-                if(producto_edit) {
-                    res.status(200).send({producto: producto_edit});
-                } else {
-                    res.status(403).send({mensaje: "Error al editar el producto"});
-                }
+                res.status(403).send({mensaje: "Error al editar el producto"});
             }
-        });
+        }
+    });
     // } else {
     //     Producto.findByIdAndUpdate({_id: id},{titulo: data.titulo, descripcion: data.descripcion, precio_compra: data.precio_compra, precio_venta: data.precio_venta, stock: data.stock, id_categoria: data.id_categoria, puntos: data.puntos}, (err, producto_edit) => {
     //         if(err) {
@@ -97,10 +106,10 @@ function obtener_producto(req, res) {
     var id = req.params['id'];
 
     Producto.findOne({_id: id}, (err, producto_data) => {
-        if(err) {
+        if (err) {
             res.status(500).send({mensaje: "Error de server"});
         } else {
-            if(producto_data) {
+            if (producto_data) {
                 res.status(200).send({producto: producto_data});
             } else {
                 res.status(200).send({mensaje: "Error en la busqueda del producto"});
@@ -109,14 +118,34 @@ function obtener_producto(req, res) {
     });
 }
 
+function product_cats(req, res) {
+    var id = req.params['id'];
+    Categoria.find({_id: id}, (err, catsSearch) => {
+        if (err) {
+            res.status(500).send({mensaje: "Error en la busqueda"});
+        } else {
+            if (catsSearch) {
+                Producto.find({id_categoria:{$all:[catsSearch]}},{name:1,tags:1})
+            } else {
+                res.status(404).send({mensaje: "La categoria no existe"});
+            }
+        }
+    });
+    // Producto.find({}, function (err, productos) {
+    //     Categoria.populate(productos, {path: "id_categoria"}, function (err, categorias) {
+    //         res.status(200).send(categorias);
+    //     });
+    // });
+}
+
 function eliminar(req, res) {
     var id = req.params['id'];
 
     Producto.findOneAndRemove({_id: id}, (err, producto_delete) => {
-        if(err) {
+        if (err) {
             res.status(500).send({mensaje: "Error de server"});
         } else {
-            if(producto_delete) {
+            if (producto_delete) {
                 // fs.unlink('./uploads/productos/' + producto_delete.imagen, (err) => {
                 //     if(err) throw err;
                 // });
@@ -133,11 +162,11 @@ function update_stock(req, res) {
     let data = req.body;
 
     Producto.findById(id, (err, producto_data) => {
-        if(producto_data) {
+        if (producto_data) {
             Producto.findByIdAndUpdate(id, {stock: parseInt(producto_data.stock) + parseInt(data.stock)}, (err, producto_edit) => {
-                if(producto_data) {
+                if (producto_data) {
                     res.status(200).send({producto: producto_edit});
-                } 
+                }
             });
         } else {
             res.status(500).send({Mensaje: "No se ha podido sumar el stock del producto"});
@@ -148,9 +177,9 @@ function update_stock(req, res) {
 function get_img(req, res) {
     var img = req.params['img'];
 
-    if(img != "null") {
+    if (img != "null") {
         let path_img = './uploads/productos/' + img;
-        res.status(200).sendFile(path.resolve(path_img));       
+        res.status(200).sendFile(path.resolve(path_img));
     } else {
         let path_img = './uploads/productos/default.png';
         res.status(200).sendFile(path.resolve(path_img));
@@ -164,5 +193,6 @@ module.exports = {
     obtener_producto,
     eliminar,
     update_stock,
-    get_img
+    get_img,
+    product_cats
 }

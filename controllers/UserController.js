@@ -64,7 +64,71 @@ function login(req, res) {
     });
 }
 
+function listar (req, res) {
+    User.find((err, user_data) => {
+        if (user_data) {
+            res.status(200).send({usuarios: user_data})
+        }
+    })
+}
+
+function editar(req, res) {
+    var data = req.body;
+    var id = req.params['id'];
+
+    User.findByIdAndUpdate({_id: id}, {
+        nombres: data.nombres,
+        apellidos: data.apellidos,
+        email: data.email,
+        password: data.password,
+        role: data.role
+    }, (err, user_edit) => {
+        if (err) {
+            res.status(500).send({mensaje: "Error de server"});
+        } else {
+            if (user_edit) {
+                res.status(200).send({usuario: user_edit});
+            } else {
+                res.status(403).send({mensaje: "Error al editar el usuario"});
+            }
+        }
+    });
+
+}
+
+function getUsuario(req, res) {
+    var id = req.params['id']
+
+    User.findById({_id: id}, (err, user_data) => {
+        if (user_data){
+            res.status(200).send({usuario: user_data})
+        } else {
+            res.status(404).send({mensaje: 'No se encuentra el usuario con ese ID'})
+        }
+    })
+}
+
+function eliminar(req, res) {
+    var id = req.params['id'];
+
+    User.findOneAndRemove({_id: id}, (err, user_delete) => {
+        if(err) {
+            res.status(500).send({mensaje: "Error de server"});
+        } else {
+            if(user_delete) {
+                res.status(200).send({user: user_delete});
+            } else {
+                res.status(401).send({mensaje: "Error al eliminar el usuario"});
+            }
+        }
+    });
+}
+
 module.exports = {
     register, 
-    login
+    login,
+    listar,
+    eliminar,
+    editar,
+    getUsuario
 }
