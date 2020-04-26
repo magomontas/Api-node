@@ -118,24 +118,21 @@ function obtener_producto(req, res) {
     });
 }
 
-function product_cats(req, res) {
-    var id = req.params['id'];
-    Categoria.find({_id: id}, (err, catsSearch) => {
-        if (err) {
-            res.status(500).send({mensaje: "Error en la busqueda"});
+function ref_prod(req, res) {
+    var id_categoria = req.params['id'];
+    Categoria.findById(id_categoria, (err, cat_search) =>{
+        if (cat_search) {
+            Producto.find({'id_categoria': cat_search._id}, (err, product_search) => {
+                if (product_search) {
+                    res.status(200).send({productos: product_search})
+                } else {
+                    res.send({mensaje: 'No hay registros con ese ID'})
+                }
+            })
         } else {
-            if (catsSearch) {
-                Producto.find({id_categoria:{$all:[catsSearch]}},{name:1,tags:1})
-            } else {
-                res.status(404).send({mensaje: "La categoria no existe"});
-            }
+            res.send({mensaje: 'Error en la busqueda'})
         }
-    });
-    // Producto.find({}, function (err, productos) {
-    //     Categoria.populate(productos, {path: "id_categoria"}, function (err, categorias) {
-    //         res.status(200).send(categorias);
-    //     });
-    // });
+    })
 }
 
 function eliminar(req, res) {
@@ -194,5 +191,5 @@ module.exports = {
     eliminar,
     update_stock,
     get_img,
-    product_cats
+    ref_prod
 }
