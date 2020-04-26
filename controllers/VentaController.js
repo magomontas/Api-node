@@ -74,17 +74,35 @@ function detalle_venta(req, res) {
     var id = req.params['id'];
 
     DetalleVenta.find({idventa: id}).populate('idproducto').exec((err, data_detalle) => {
-        if (data_detalle){
+        if (data_detalle) {
             res.status(200).send({detalles: data_detalle})
-        }else {
+        } else {
             res.status(404).send({mensaje: "Error en la busqueda"})
         }
     })
 }
+
+function get_venta(req, res) {
+    var id = req.params['id'];
+    Venta.findById({_id: id}).populate('iduser').populate('idcliente').exec(
+        (err, venta_search) => {
+            if (err) {
+                res.status(500).send({mensaje: "Error en la busqueda"});
+            } else {
+                if (venta_search) {
+                    res.status(200).send({venta: venta_search});
+                } else {
+                    res.status(404).send({mensaje: "La venta no existe"});
+                }
+            }
+        })
+}
+
 
 module.exports = {
     registrar,
     datos_venta,
     listado_venta,
     detalle_venta,
+    get_venta,
 }
