@@ -68,23 +68,23 @@ function editar(req, res) {
 
 
     Producto.findByIdAndUpdate({_id: id}, {
-        titulo: data.titulo,
-        descripcion: data.descripcion,
-        imagen: data.imagen,
-        precio_compra: data.precio_compra,
-        precio_venta: data.precio_venta,
-        id_categoria: data.id_categoria,
-        puntos: data.puntos
-    }, (err, producto_edit) => {
-        if (err) {
-            res.status(500).send({mensaje: "Error de server"});
-        } else {
-            if (producto_edit) {
-                res.status(200).send({producto: producto_edit});
+            titulo: data.titulo,
+            descripcion: data.descripcion,
+            imagen: data.imagen,
+            precio_compra: data.precio_compra,
+            precio_venta: data.precio_venta,
+            id_categoria: data.id_categoria,
+            puntos: data.puntos
+        }, (err, producto_edit) => {
+            if (err) {
+                res.status(500).send({mensaje: "Error de server"});
             } else {
-                res.status(403).send({mensaje: "Error al editar el producto"});
+                if (producto_edit) {
+                    res.status(200).send({producto: producto_edit});
+                } else {
+                    res.status(403).send({mensaje: "Error al editar el producto"});
+                }
             }
-        }
     });
     // } else {
     //     Producto.findByIdAndUpdate({_id: id},{titulo: data.titulo, descripcion: data.descripcion, precio_compra: data.precio_compra, precio_venta: data.precio_venta, stock: data.stock, id_categoria: data.id_categoria, puntos: data.puntos}, (err, producto_edit) => {
@@ -183,6 +183,20 @@ function get_img(req, res) {
     }
 }
 
+function top(req, res) {
+    Producto.find({}, {'precio_venta': 1, "_id": 0, 'titulo': 1}).sort({'precio_venta': -1}).limit(3).exec((err, productos_listado) => {
+        if (err) {
+            res.status(500).send({mensaje: "Error en el server"});
+        } else {
+            if (productos_listado) {
+                res.status(200).send({producto: productos_listado});
+            } else {
+                res.status(404).send({mensaje: "NO se ha podido obtener el Producto"});
+            }
+        }
+    });
+}
+
 module.exports = {
     registrar,
     listar,
@@ -191,5 +205,6 @@ module.exports = {
     eliminar,
     update_stock,
     get_img,
-    ref_prod
+    ref_prod,
+    top
 }

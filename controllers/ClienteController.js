@@ -57,7 +57,7 @@ function eliminar(req, res) {
     
     Cliente.findByIdAndRemove(id, (err, cliente_eliminado) => {
         if(err) {
-            res.status(500).send({mensaje: "Erro de server"});
+            res.status(500).send({mensaje: "Error de server"});
         } else { 
             if(cliente_eliminado) {
                 res.status(200).send({cliente: cliente_eliminado});

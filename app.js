@@ -10,6 +10,7 @@ var categoria_routes = require('./routes/categoria');
 var producto_routes = require('./routes/producto');
 var cliente_routes = require('./routes/cliente');
 var venta_route = require('./routes/venta');
+var reserva_routes = require('./routes/reserva');
 
 
 mongoose.connect("mongodb://localhost:27017/sistema", {useUnifiedTopology: true, useNewUrlParser: true}, (err, res)=>{
@@ -42,5 +43,6 @@ app.use('/api', categoria_routes);
 app.use('/api', producto_routes);
 app.use('/api', cliente_routes);
 app.use('/api', venta_route);
+app.use('/api', reserva_routes);
 
 module.exports = app;

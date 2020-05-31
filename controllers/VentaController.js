@@ -1,12 +1,14 @@
 var Venta = require('../models/ventas');
 var DetalleVenta = require('../models/detalleventa');
 var Producto = require('../models/producto');
+var Cliente = require('../models/cliente');
 
 function registrar(req, res) {
     var data = req.body;
     var venta = new Venta();
     venta.idcliente = data.idcliente;
     venta.iduser = data.iduser;
+    venta.total = data.total;
 
     venta.save((err, venta_save) => {
         if (venta_save) {
@@ -32,6 +34,16 @@ function registrar(req, res) {
                         res.status(401).send({mensaje: "No se ha podido realizar la venta"});
                     }
                 });
+            });
+
+            Cliente.findById({_id: venta.idcliente}, (err, producto_data) => {
+                if (producto_data) {
+                    Cliente.findByIdAndUpdate({_id: producto_data._id}, {puntos: parseInt(producto_data.puntos) + parseInt(10)}, (err, producto_edit) => {
+                        res.status(200).send({cliente: producto_data});
+                    });
+                } else {
+                    res.status(404).send({mensaje: "No se encontro el producto"});
+                }
             });
 
         } else {
@@ -86,11 +98,47 @@ function detalle_venta(req, res) {
     })
 }
 
+function top_details(req, res) {
+    // var query = {$group: {_id: '$idproducto', cantidad: {$max: '$cantidad'}, suma: {$sum: '$cantidad'}}};
 
+    DetalleVenta.aggregate([
+        {
+            "$group": {
+                '_id': '$idproducto',
+                'cantidad': {'$max': '$cantidad'},
+                'sumatoria': {'$sum': '$cantidad'}
+            }
+        },
+        {"$sort": {'sumatoria': -1}}, {"$limit": 3},
+        {
+            $lookup: {
+                from: "productos",
+                localField: "_id",
+                foreignField: "_id",
+                as: "inventory_docs"
+            }
+        },
+    ]).exec((err, data_detalle) => {
+        if (data_detalle) {
+            res.status(200).send({detalles: data_detalle})
+        } else {
+            res.status(404).send({mensaje: "Error en la busqueda"})
+        }
+    })
+
+    // DetalleVenta.find({}, {'$sum cantidad': 1, "_id": 0}).limit(3).populate('idproducto').exec((err, data_detalle) => {
+    //     if (data_detalle) {
+    //         res.status(200).send({detalles: data_detalle})
+    //     } else {
+    //         res.status(404).send({mensaje: "Error en la busqueda"})
+    //     }
+    // })
+}
 
 module.exports = {
     registrar,
     datos_venta,
     listado_venta,
     detalle_venta,
+    top_details,
 }

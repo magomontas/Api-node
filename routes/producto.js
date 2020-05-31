@@ -7,6 +7,7 @@ var api = express.Router();
 
 api.post('/producto/registrar', ProductoController.registrar);
 api.get('/productos/:titulo?', ProductoController.listar);
+api.get('/producto/top', ProductoController.top);
 api.get('/producto/:id', ProductoController.obtener_producto);
 api.get('/producto/cats/:id', ProductoController.ref_prod);
 api.patch('/producto/editar/:id', ProductoController.editar);
