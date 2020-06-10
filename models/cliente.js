@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 
 var ClienteSchema = Schema({
     nombres: String,
+    direccion: String,
     dui: String,
     correo: String,
     puntos: String,

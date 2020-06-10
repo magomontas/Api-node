@@ -6,6 +6,7 @@ function registrar(req, res) {
     var cliente = new Cliente();
 
     cliente.nombres = data.nombres;
+    cliente.direccion = data.direccion;
     cliente.dui = data.dui;
     cliente.correo = data.correo;
     cliente.puntos = 10;
@@ -28,7 +29,7 @@ function editar(req, res) {
     var id = req.params['id'];
     var data = req.body;
 
-    Cliente.findByIdAndUpdate({ _id: id }, { nombres: data.nombres, dui: data.dui, correo: data.correo }, (err, cliente_editado) => {
+    Cliente.findByIdAndUpdate({ _id: id }, { nombres: data.nombres, direccion: data.direccion, dui: data.dui, correo: data.correo }, (err, cliente_editado) => {
         if (err) {
             res.status(500).send({ mensaje: "Error de server" });
         } else {
