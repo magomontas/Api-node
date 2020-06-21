@@ -9,17 +9,24 @@ function registrar(req, res) {
     mapa.longitud = data.longitud;
     mapa.id_usuario = data.id_usuario;
 
-    mapa.save((err, mapa_save) => {
-        if (err) {
-            res.status(500).send({ mensaje: "Error de server" });
-        } else {
-            if (mapa_save) {
-                res.status(200).send({ mapa: mapa_save });
-            } else {
-                res.status(401).send({ mensaje: "Error al crear la dirección" });
-            }
-        }
-    });
+    Mapa.save()
+        .then((mapa_save) => {
+            res.satus(200).send({mapa: mapa_save})
+        })
+        .catch((err) => {
+            res.send({mensaje: err})
+        })
+    // mapa.save((err, mapa_save) => {
+    //     if (err) {
+    //         res.status(500).send({ mensaje: "Error de server" });
+    //     } else {
+    //         if (mapa_save) {
+    //             res.status(200).send({ mapa: mapa_save });
+    //         } else {
+    //             res.status(401).send({ mensaje: "Error al crear la dirección" });
+    //         }
+    //     }
+    // });
 
 }
 
@@ -27,22 +34,38 @@ function editar(req, res) {
     var id = req.params['id'];
     var data = req.body;
 
-    Mapa.findByIdAndUpdate({ _id: id }, { longitud: data.longitud, latitud: data.latitud}, (err, map_edit) => {
-        if (err) {
-            res.status(500).send({ mensaje: "Error de server" });
-        } else {
-            if (map_edit) {
-                res.status(200).send({ mapa: map_edit });
-            } else {
-                res.status(500).send({ mensaje: "No se ha podido Editar la dirección" });
-            }
-        }
+    Mapa.findByIdAndUpdate({_id: id}, { longitud: data.longitud, latitud: data.latitud})
+        .then((mapa_edit) => {
+            res.status(200).send({mapa: mapa_edit})
+        })
+        .catch((err) => {
+            res.send({mensaje: err})
+        })
 
-    });
+    // Mapa.findByIdAndUpdate({ _id: id },, (err, map_edit) => {
+    //     if (err) {
+    //         res.status(500).send({ mensaje: "Error de server" });
+    //     } else {
+    //         if (map_edit) {
+    //             res.status(200).send({ mapa: map_edit });
+    //         } else {
+    //             res.status(500).send({ mensaje: "No se ha podido Editar la dirección" });
+    //         }
+    //     }
+    //
+    // });
 }
 
 function listar(req, res) {
-    Mapa.find((err, mapa_data) => {
+    Mapa.find().populate('idusuario')
+        .then((data) =>  {
+            res.status(200).send({mapas: data})
+        })
+        .catch((err) => {
+            res.send({mensaje: err})
+        })
+
+    Mapa.find().populate('id_usuario').exec((err, mapa_data) => {
         if (mapa_data) {
             res.status(200).send({mapas: mapa_data})
         } else {

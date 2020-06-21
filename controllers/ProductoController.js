@@ -86,19 +86,6 @@ function editar(req, res) {
                 }
             }
     });
-    // } else {
-    //     Producto.findByIdAndUpdate({_id: id},{titulo: data.titulo, descripcion: data.descripcion, precio_compra: data.precio_compra, precio_venta: data.precio_venta, stock: data.stock, id_categoria: data.id_categoria, puntos: data.puntos}, (err, producto_edit) => {
-    //         if(err) {
-    //             res.status(500).send({mensaje: "Error de server"});
-    //         } else {
-    //             if(producto_edit) {
-    //                 res.status(200).send({producto: producto_edit});
-    //             } else {
-    //                 res.status(403).send({mensaje: "Error al editar el producto"});
-    //             }
-    //         }
-    //     });
-    // }
 
 }
 

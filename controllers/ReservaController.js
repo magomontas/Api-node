@@ -7,7 +7,6 @@ function registrar(req, res) {
     reserva.idcliente = data.idcliente;
     reserva.iduser = data.iduser;
     reserva.idproducto = data.idproducto;
-    reserva.fecha = data.fecha;
     reserva.cantidad = data.cantidad;
     reserva.total = data.total;
 
@@ -26,16 +25,6 @@ function registrar(req, res) {
                     res.status(404).send({mensaje: "No se encontro el producto"});
                 }
             });
-            //
-            // Cliente.findById({_id: venta.idcliente}, (err, producto_data) => {
-            //     if (producto_data) {
-            //         Cliente.findByIdAndUpdate({_id: producto_data._id}, {puntos: parseInt(producto_data.puntos) + parseInt(10)}, (err, producto_edit) => {
-            //             res.status(200).send({cliente: producto_data});
-            //         });
-            //     } else {
-            //         res.status(404).send({mensaje: "No se encontro el producto"});
-            //     }
-            // });
         } else {
             res.status(401).send({mensaje: "Error al registrar"});
         }

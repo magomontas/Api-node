@@ -3,7 +3,7 @@ var MapaController = require('../controllers/MapasController');
 
 var api = express.Router();
 
-api.post('/registrar', MapaController.register);
+api.post('/mapa/registrar', MapaController.registrar);
 api.get('/mapas', MapaController.listar);
 api.delete('/mapa/eliminar/:id', MapaController.eliminar);
 api.patch('/mapa/editar/:id', MapaController.editar);

@@ -15,14 +15,13 @@ function register(req, res) {
                 user.apellidos = params.apellidos;
                 user.email = params.email;
                 user.role = params.role;
-
-                user.save((err, user_save) => {
-                    if (err) {
-                        res.status(500).send({error: 'Rellene todos los campos'});
-                    } else {
+                user.save()
+                    .then((user_save) => {
                         res.status(200).send({user: user_save});
-                    }
-                });
+                    })
+                    .catch((err) => {
+                        res.send({mensaje: err})
+                    })
             }
         });
     } else {
@@ -65,11 +64,13 @@ function login(req, res) {
 }
 
 function listar(req, res) {
-    User.find((err, user_data) => {
-        if (user_data) {
-            res.status(200).send({usuarios: user_data})
-        }
-    })
+    User.find()
+        .then((user_data) => {
+            res.send({usuarios: user_data})
+        })
+        .catch((err) => {
+            res.send({mensaje: err})
+        })
 }
 
 function editar(req, res) {
@@ -85,69 +86,42 @@ function editar(req, res) {
                     email: data.email,
                     password: hash,
                     role: data.role
-                }, (err, user_edit) => {
-                    if (err) {
-                        res.status(500).send({mensaje: "Error de server"});
-                    } else {
-                        if (user_edit) {
-                            res.status(200).send({usuario: user_edit});
-                        } else {
-                            res.status(403).send({mensaje: "Error al editar el usuario"});
-                        }
-                    }
-                });
+                })
+                    .then((user_edit) => {
+                        res.status(200).send({usuario: user_edit});
+                    })
+                    .catch((err) => {
+                        res.send({mensaje: err})
+                    })
             }
         });
     } else {
         res.status(401).send({error: "No ingreso la Contraseña"});
     }
 
-    // User.findByIdAndUpdate({_id: id}, {
-    //     nombres: data.nombres,
-    //     apellidos: data.apellidos,
-    //     email: data.email,
-    //     password: data.password,
-    //     role: data.role
-    // }, (err, user_edit) => {
-    //     if (err) {
-    //         res.status(500).send({mensaje: "Error de server"});
-    //     } else {
-    //         if (user_edit) {
-    //             res.status(200).send({usuario: user_edit});
-    //         } else {
-    //             res.status(403).send({mensaje: "Error al editar el usuario"});
-    //         }
-    //     }
-    // });
-
 }
 
 function getUsuario(req, res) {
     var id = req.params['id']
-
-    User.findById({_id: id}, (err, user_data) => {
-        if (user_data) {
-            res.status(200).send({usuario: user_data})
-        } else {
-            res.status(404).send({mensaje: 'No se encuentra el usuario con ese ID'})
-        }
-    })
+    User.findById({_id: id})
+        .then((usuario_data) => {
+            res.send({usuario: usuario_data})
+        })
+        .catch((err) => {
+            res.send({mensaje: err})
+        })
 }
 
 function eliminar(req, res) {
     var id = req.params['id'];
 
-    User.findOneAndRemove({_id: id}, (err, user_delete) => {
-        if (err) {
-            res.status(500).send({mensaje: "Error de server"});
-        } else {
-            if (user_delete) {
-                res.status(200).send({user: user_delete});
-            } else {
-                res.status(401).send({mensaje: "Error al eliminar el usuario"});
-            }
-        }
-    });
+    User.findOneAndRemove({_id: id})
+        .then((user_delete) => {
+            res.send({user: user_delete})
+        })
+        .catch((err) => {
+            res.send({mensaje: err})
+        })
 }
 
 module.exports = {

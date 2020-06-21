@@ -7,33 +7,24 @@ function registrar(req, res) {
     categoria.titulo = data.titulo;
     categoria.descripcion = data.descripcion;
 
-    categoria.save((err, categoria_save) => {
-        if (err) {
-            res.status(500).send({mensaje: "Error en el server"});
-        } else {
-            if (categoria_save) {
-                res.status(200).send({categoria: categoria_save});
-            } else {
-                res.status(401).send({mensaje: "La categoria no se pudo registrar"});
-            }
-        }
-    });
+    categoria.save()
+        .then((categoria_save) => {
+            res.send({categorua: categoria_save})
+        })
+        .catch((err) => {
+            res.send({mensaje: err})
+        })
 }
 
 function obtener_categoria(req, res) {
     var id = req.params['id'];
-    Categoria.findById({_id: id}, (err, categoria_data) => {
-        if (err) {
-            res.status(500).send({mensaje: "Error en la busqueda"});
-        } else {
-            if (categoria_data) {
-                res.status(200).send({categoria: categoria_data});
-            } else {
-                res.status(404).send({mensaje: "La categoria no existe"});
-            }
-        }
-    });
-
+    Categoria.findById({_id: id})
+        .then((categoria_data) => {
+            res.send({categoria: categoria_data})
+        })
+        .catch((err) => {
+            res.send({mensaje: err})
+        })
 }
 
 function editar(req, res) {
@@ -43,33 +34,25 @@ function editar(req, res) {
     Categoria.findByIdAndUpdate({_id: id}, {
         titulo: data.titulo,
         descripcion: data.descripcion
-    }, (err, categoria_edit) => {
-        if (err) {
-            res.status(500).send({mensaje: 'Error al obtener la categoria'});
-        } else {
-            if (categoria_edit) {
-                res.status(200).send({categoria: categoria_edit});
-            } else {
-                res.status(404).send({mnsaje: "NO se ha actualizado la categora"});
-            }
-        }
-    });
+    })
+        .then((categoria_edit) => {
+            res.send({categoria: categoria_edit})
+        })
+        .catch((err) => {
+            res.send({mensaje: err})
+        })
 }
 
 function eliminar(req, res) {
     var id = req.params['id'];
 
-    Categoria.findByIdAndRemove({_id: id}, (err, categoria_delete) => {
-        if (err) {
-            res.status(500).send({mensaje: "Error para encontrar la categoria"});
-        } else {
-            if (categoria_delete) {
-                res.status(200).send({categoria: categoria_delete});
-            } else {
-                res.status(404).send({mensaje: "Error al eliminarr la Categoria"});
-            }
-        }
-    });
+    Categoria.findByIdAndRemove({_id: id})
+        .then((categoria_delete) => {
+            res.status(200).send({categoria: categoria_delete})
+        })
+        .catch((err) => {
+            res.status(400).send({mensaje: err})
+        })
 }
 
 function listar(req, res) {
